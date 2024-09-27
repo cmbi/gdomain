@@ -91,4 +91,5 @@ if __name__ == "__main__":
         alignment_path = align(pdb_path)
         residues = list_aligned_residues(alignment_path, pdb_path)
 
-        print(pdb_path, ",".join([str(r.get_id()[1]) for r in residues]))
+        chain_ids = set([r.get_parent().get_id() for r in residues])
+        print(pdb_path, ','.join(chain_ids), ','.join([str(r.get_id()[1]) for r in residues]))
