@@ -20,6 +20,14 @@ reference_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/
 
 
 def align(mobile_path: str) -> str:
+    """
+    Calls pymol to align the input structure to the reference structure.
+
+    Args:
+        mobile_path: to unknown PDB file
+    Returns:
+        alignment path to file in clustal format
+    """
 
     alignment_name = uuid4()
     alignment_path = os.path.join(tmp_dir, f"{alignment_name}.aln")
@@ -46,10 +54,21 @@ def align(mobile_path: str) -> str:
 
 
 def parse_clustal(path: str) -> Dict[str, str]:
+    """
+    Parses clustal alignment format file
+
+    Args:
+        path: to alignment file
+    Returns:
+        alignment dictionary: {id1: aligned sequence 1, id2: aligned sequence 2, ...}
+    """
 
     alignment = {}
     with open(path, 'rt') as f:
         for line in f:
+            # line format: key and sequence separated by whitespaces
+            # key starts on first line
+
             i = line.find(' ')
             k = line[:i].strip()
             v = line[i:].strip()
@@ -61,22 +80,35 @@ def parse_clustal(path: str) -> Dict[str, str]:
 
 
 def list_aligned_residues(alignment_path: str, pdb_path: str) -> List[Residue]:
+    """
+    List all residues that were aligned to the reference structure
 
+    Args:
+        alignment_path: to alignment file in clustal format
+        pdb_path: the pdb file that was used as a mobile structure
+    Returns:
+        List of biopython pdb residues in the mobile structure, that were aligned
+    """
+
+    # get residues from pdb structure
     structure = pdb_parser.get_structure('mobile', pdb_path)
     model = list(structure.get_models())[0]
     residues = []
     for chain in sorted(model.get_chains(), key=lambda c: c.get_id()):
         residues += list(chain.get_residues())
 
+    # get reference and mobile aligned sequences
     alignment = parse_clustal(alignment_path)
     aligned_reference = alignment['reference']
     aligned_mobile = alignment['mobile']
 
+    # find all aligned residues
     aligned_index = []
     for i in range(len(aligned_reference)):
         if aligned_reference[i] != '-':
             aligned_index.append(len(aligned_mobile[:i].replace('-', '')))
 
+    # isolate aligned residues
     aligned_residues = [residues[i] for i in aligned_index]
 
     return aligned_residues
@@ -92,4 +124,6 @@ if __name__ == "__main__":
         residues = list_aligned_residues(alignment_path, pdb_path)
 
         chain_ids = set([r.get_parent().get_id() for r in residues])
-        print(pdb_path, ','.join(chain_ids), ','.join([str(r.get_id()[1]) for r in residues]))
+
+        # print only first and last residue
+        print(pdb_path, ','.join(chain_ids), f"{residues[0].get_id()[1]}-{residues[-1].get_id()[1]}")
