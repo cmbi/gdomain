@@ -60,7 +60,7 @@ def parse_clustal(path: str) -> Dict[str, str]:
     Args:
         path: to alignment file
     Returns:
-        alignment dictionary: {id1: aligned sequence 1, id2: aligned sequence 2, ...}
+        alignment dictionary: {id 1: aligned sequence 1, id 2: aligned sequence 2, ...}
     """
 
     alignment = {}
@@ -123,7 +123,5 @@ if __name__ == "__main__":
         alignment_path = align(pdb_path)
         residues = list_aligned_residues(alignment_path, pdb_path)
 
-        chain_ids = set([r.get_parent().get_id() for r in residues])
-
         # print only first and last residue
-        print(pdb_path, ','.join(chain_ids), f"{residues[0].get_id()[1]}-{residues[-1].get_id()[1]}")
+        print(pdb_path, f"{residues[0].get_parent().get_id()}{residues[0].get_id()[1]}-{residues[-1].get_parent().get_id()}{residues[-1].get_id()[1]}")
