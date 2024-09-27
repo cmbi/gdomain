@@ -11,12 +11,14 @@ from Bio.PDB.PDBParser import PDBParser
 from pymol import cmd as pymol_cmd
 
 
+# pdb parser from biopython
 pdb_parser = PDBParser()
 
-
+# directory for storing temporary files
 tmp_dir = gettempdir()
-reference_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/ref.pdb")
 
+# reference pth path is assumed to be in ../data/ref.pdb
+reference_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/ref.pdb")
 
 
 def align(mobile_path: str) -> str:
@@ -29,6 +31,7 @@ def align(mobile_path: str) -> str:
         alignment path to file in clustal format
     """
 
+    # where to store the alignment
     alignment_name = uuid4()
     alignment_path = os.path.join(tmp_dir, f"{alignment_name}.aln")
 
@@ -120,8 +123,9 @@ if __name__ == "__main__":
         print("Please provide at least one pdb file path")
 
     for pdb_path in sys.argv[1:]:
+
         alignment_path = align(pdb_path)
         residues = list_aligned_residues(alignment_path, pdb_path)
 
-        # print only first and last residue
+        # print only first and last residue (chain id + residue number)
         print(pdb_path, f"{residues[0].get_parent().get_id()}{residues[0].get_id()[1]}-{residues[-1].get_parent().get_id()}{residues[-1].get_id()[1]}")

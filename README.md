@@ -29,4 +29,4 @@ pdb_path_2 A1-A179
 
 Each row corresponds to an unknown PDB file.
 The first column identifies the input file.
-The second column indicates the residues of the G-domain. (chain id + residue number)
+The second column indicates the residues of the G-domain. (chain ids + residue numbers)
