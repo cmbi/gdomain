@@ -13,7 +13,13 @@ One can insert multiple pdb files:
 scripts/find_gdomain pdb_path_1 pdb_path_2 ...
 ```
 
-gives output:
+or:
+
+```
+scripts/find_gdomain /data/pdb_files/*.pdb
+```
+
+output:
 
 ```
 pdb_path_1 M2-M180
